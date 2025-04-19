@@ -87,15 +87,15 @@ function renderizarDeudores() {
     const div = document.createElement("div");
     div.className = "deudor-card";
     div.innerHTML = `
-      <strong>${d.nombre}</strong><br>
-      Deuda: $${formatear(d.monto)}<br>
-      Histórico: $${formatear(d.historico)}
-      <div class="deudor-actions">
-        <input type="number" id="input-${d.nombre}" placeholder="Monto">
-        <button onclick="sumar('${d.nombre}')">➕</button>
-        <button onclick="restar('${d.nombre}')">➖</button>
-        <button onclick="eliminar('${d.nombre}')">❌</button>
-      </div>`;
+    <strong>${d.nombre}</strong><br>
+    Deuda: $${formatear(d.monto)}<br>
+    Histórico: $${formatear(d.historico)}
+    <div class="deudor-actions">
+      <input type="number" id="input-${d.nombre}" placeholder="Monto">
+      <button onclick="sumar('${d.nombre}')">➕</button>
+      <button onclick="restar('${d.nombre}')">➖</button>
+      <button onclick="confirmarEliminacion('${d.nombre}')">❌</button>
+    </div>`;
     cont.appendChild(div);
   });
 
@@ -264,4 +264,9 @@ function eliminarTodosLosDatos() {
     console.error("Error al eliminar la base de datos", event);
     alert("Hubo un error al intentar eliminar los datos.");
   };
+}
+function confirmarEliminacion(nombre) {
+  if (confirm(`¿Estás seguro de que deseas eliminar a ${nombre}?`)) {
+    eliminar(nombre);
+  }
 }
