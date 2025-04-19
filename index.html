@@ -1,354 +1,278 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lista de Deudores</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestor de Deudas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --color-fondo: #121212;
-      --color-principal: #10a37f;
-      --color-texto: #e0e0e0;
-      --color-blanco: #1e1e1e;
-      --sombra: 0 4px 14px rgba(0, 0, 0, 0.6);
-      --radio-borde: 12px;
-    }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--color-fondo);
+    * {
       margin: 0;
-      padding: 40px;
-      color: var(--color-texto);
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      box-sizing: border-box;
     }
-
+    body {
+      background-color: #0e0b1c;
+      color: #e1d9ff;
+      padding: 2rem;
+    }
     h1 {
-      color: var(--color-principal);
-      font-size: 2rem;
-      margin-bottom: 20px;
+      color: #a06cd5;
+      margin-bottom: 1rem;
     }
-
-    .input-container {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
+    .card {
+      background: #1e1b2e;
+      padding: 1.5rem;
+      border-radius: 1rem;
+      margin-bottom: 2rem;
     }
-
-    input[type="text"],
-    input[type="number"],
-    select {
-      padding: 10px;
-      border: 1px solid #555;
-      border-radius: var(--radio-borde);
-      background-color: #1e1e1e;
-      color: var(--color-texto);
-      flex: 1;
-    }
-
-    button {
-      padding: 10px 16px;
+    input, select, button {
+      background: #2b2640;
+      color: #fff;
       border: none;
-      border-radius: var(--radio-borde);
-      background-color: var(--color-principal);
-      color: var(--color-texto);
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.3s;
+      padding: 0.5rem 1rem;
+      margin: 0.5rem 0;
+      border-radius: 0.5rem;
     }
-
     button:hover {
-      background-color: #0e8d6c;
+      background: #a06cd5;
+      cursor: pointer;
     }
-
-    .persona {
-      background-color: var(--color-blanco);
-      padding: 20px;
-      border-radius: var(--radio-borde);
-      box-shadow: var(--sombra);
-      margin-bottom: 15px;
+    table {
+      width: 100%;
+      margin-top: 1rem;
+      border-collapse: collapse;
     }
-
-    .persona h3 {
-      margin: 0 0 10px;
-      color: var(--color-principal);
-    }
-
-    .acciones {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .total {
-      margin-top: 30px;
-      font-size: 1.2rem;
-      color: var(--color-principal);
-    }
-
-    .historial {
-      margin-top: 40px;
-      background-color: #1e1e1e;
-      padding: 20px;
-      border-radius: var(--radio-borde);
-      box-shadow: var(--sombra);
-    }
-
-    .historial h2 {
-      margin-top: 0;
-      color: var(--color-principal);
-    }
-
-    .movimiento {
-      margin-bottom: 8px;
-      border-bottom: 1px solid #333;
-      padding-bottom: 6px;
+    th, td {
+      padding: 0.5rem;
+      text-align: left;
+      border-bottom: 1px solid #3d345c;
     }
   </style>
 </head>
 <body>
-  <h1>Lista de Personas que Deben Dinero</h1>
+  <h1>Gestor de Deudas</h1>
 
-  <div class="input-container">
-    <input type="text" id="nombre" placeholder="Nombre de la persona">
-    <button onclick="agregarPersona()">Agregar Persona</button>
-  <div class="input-container">
-    <button onclick="exportarDatos()">Exportar Datos (.txt)</button>
-    <input type="file" id="importarArchivo" accept=".txt" onchange="importarDatos(event)">
-    <button onclick="borrarTodo()">Borrar Toda la Base de Datos</button>
+  <div class="card">
+    <h2>Días de Gracia</h2>
+    <input type="number" id="diasGraciaGlobal" placeholder="Días de gracia" value="0" onchange="mostrarPersonas()">
   </div>
 
+  <div class="card">
+    <h2>Agregar Persona</h2>
+    <input type="text" id="nombre" placeholder="Nombre">
+    <input type="number" id="monto" placeholder="Monto inicial">
+    <button onclick="agregarPersona()">Agregar</button>
   </div>
 
-  <div id="lista"></div>
-
-  <div class="total">
-    Total general debido: $<span id="totalGeneral">0</span><br>
-    Deuda histórica general: $<span id="deudaHistoricaGeneral">0</span>
+  <div class="card">
+    <h2>Filtrar</h2>
+    <input type="text" id="filtro" placeholder="Filtrar por nombre o mora" oninput="mostrarPersonas()">
   </div>
 
-  <div class="historial">
-    <h2>Historial de movimientos</h2>
-    <div class="input-container">
-      <select id="filtroPersona" onchange="renderHistorial()">
-        <option value="">Todas las personas</option>
-      </select>
-      <button onclick="exportarHistorial()">Exportar Historial</button>
-      <button onclick="exportarListaSimple()">Exportar lista simple</button>
-    </div>
-    <div id="historialMovimientos"></div>
+  <div class="card">
+    <h2>Lista de Personas</h2>
+    <table id="tabla">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Monto Debido</th>
+          <th>Total Histórico</th>
+          <th>Interés Estimado</th>
+          <th>Fecha Inicio</th>
+          <th>En Mora</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <p><strong>Total Debido General:</strong> <span id="totalGeneral">0</span></p>
+    <p><strong>Total Histórico General:</strong> <span id="totalHistoricoGeneral">0</span></p>
+
+    <h3>Historial General</h3>
+    <ul id="historialGeneral"></ul>
+  </div>
+
+  <div class="card">
+    <h2>Importar / Exportar</h2>
+    <input type="file" id="importFile" accept=".txt">
+    <button onclick="importarLista()">Importar .txt</button>
+    <button onclick="exportarCompleta()">Exportar Completa</button>
+    <button onclick="exportarSimple()">Exportar Simple</button>
   </div>
 
   <script>
-    let personas = [];
-    let deudaHistoricaGeneral = 0;
-    let historialMovimientos = [];
+    let db;
+    const request = indexedDB.open("GestorDeudas", 1);
 
-    function guardarDatos() {
-      localStorage.setItem('personas', JSON.stringify(personas));
-      localStorage.setItem('deudaHistoricaGeneral', deudaHistoricaGeneral);
-      localStorage.setItem('historialMovimientos', JSON.stringify(historialMovimientos));
-    }
+    request.onupgradeneeded = (event) => {
+      db = event.target.result;
+      db.createObjectStore("personas", { keyPath: "nombre" });
+    };
 
-    function cargarDatos() {
-      const datosPersonas = localStorage.getItem('personas');
-      const deudaHistorica = localStorage.getItem('deudaHistoricaGeneral');
-      const historial = localStorage.getItem('historialMovimientos');
-
-      if (datosPersonas) personas = JSON.parse(datosPersonas);
-      if (deudaHistorica) deudaHistoricaGeneral = parseFloat(deudaHistorica);
-      if (historial) historialMovimientos = JSON.parse(historial);
-    }
+    request.onsuccess = (event) => {
+      db = event.target.result;
+      mostrarPersonas();
+    };
 
     function agregarPersona() {
-      const nombre = document.getElementById('nombre').value.trim();
-      if (nombre === '') return;
-
+      const nombre = document.getElementById("nombre").value;
+      const monto = parseInt(document.getElementById("monto").value);
       const persona = {
         nombre,
-        deudaActual: 0,
-        deudaHistorial: 0
+        monto,
+        totalHistorico: monto,
+        historial: [{ fecha: new Date().toISOString(), cambio: monto, nombre }],
+        fechaInicio: new Date().toISOString()
       };
 
-      personas.push(persona);
-      document.getElementById('nombre').value = '';
-      guardarDatos();
-      renderLista();
+      const tx = db.transaction("personas", "readwrite");
+      tx.objectStore("personas").put(persona);
+      tx.oncomplete = () => mostrarPersonas();
     }
 
-    function actualizarDeuda(index, cantidad) {
-      const persona = personas[index];
-      persona.deudaActual += cantidad;
-      if (cantidad > 0) {
-        persona.deudaHistorial += cantidad;
-        deudaHistoricaGeneral += cantidad;
+    function mostrarPersonas() {
+      const filtro = document.getElementById("filtro").value.toLowerCase();
+      const diasGracia = parseInt(document.getElementById("diasGraciaGlobal").value);
+      const tx = db.transaction("personas", "readonly");
+      const store = tx.objectStore("personas");
+      const request = store.getAll();
+
+      request.onsuccess = () => {
+        const tabla = document.querySelector("#tabla tbody");
+        const historialGeneral = document.getElementById("historialGeneral");
+        tabla.innerHTML = "";
+        historialGeneral.innerHTML = "";
+        let total = 0;
+        let totalHistoricoGeneral = 0;
+        let historial = [];
+
+        request.result.forEach(p => {
+          const fechaInicio = new Date(p.fechaInicio);
+          const hoy = new Date();
+          const diasPasados = contarDiasHabiles(fechaInicio, hoy);
+          const enMora = diasPasados > diasGracia ? "Sí" : "No";
+
+          if (filtro && !p.nombre.toLowerCase().includes(filtro) && !(filtro === "mora" && enMora === "Sí")) return;
+
+          total += p.monto;
+          totalHistoricoGeneral += p.totalHistorico || 0;
+
+          const interes = Math.max(0, diasPasados - diasGracia);
+
+          const fila = document.createElement("tr");
+          fila.innerHTML = `
+            <td>${p.nombre}</td>
+            <td>${p.monto.toLocaleString()}</td>
+            <td>${(p.totalHistorico || 0).toLocaleString()}</td>
+            <td>${interes.toLocaleString()}</td>
+            <td>${fechaInicio.toLocaleDateString()}</td>
+            <td>${enMora}</td>
+            <td>
+              <input type="number" placeholder="Monto" id="mod-${p.nombre}">
+              <button onclick="modificarMonto('${p.nombre}', true)">+</button>
+              <button onclick="modificarMonto('${p.nombre}', false)">-</button>
+            </td>
+          `;
+          tabla.appendChild(fila);
+
+          historial.push(...p.historial);
+        });
+
+        document.getElementById("totalGeneral").textContent = total.toLocaleString();
+        document.getElementById("totalHistoricoGeneral").textContent = totalHistoricoGeneral.toLocaleString();
+
+        historial.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+        historial.forEach(h => {
+          const li = document.createElement("li");
+          li.textContent = `${new Date(h.fecha).toLocaleDateString()} - ${h.nombre}: ${h.cambio.toLocaleString()}`;
+          historialGeneral.appendChild(li);
+        });
+      };
+    }
+
+    function contarDiasHabiles(fechaInicio, fechaFin) {
+      let count = 0;
+      const fecha = new Date(fechaInicio);
+      while (fecha <= fechaFin) {
+        const dia = fecha.getDay();
+        if (dia !== 0 && dia !== 6) count++;
+        fecha.setDate(fecha.getDate() + 1);
       }
-
-      const fecha = new Date().toLocaleString();
-      const tipo = cantidad > 0 ? 'Sumó' : 'Restó';
-      historialMovimientos.unshift({
-        fecha,
-        persona: persona.nombre,
-        accion: tipo,
-        cantidad: Math.abs(cantidad)
-      });
-
-      guardarDatos();
-      renderLista();
+      return count;
     }
 
-    function renderLista() {
-      const lista = document.getElementById('lista');
-      lista.innerHTML = '';
+    function modificarMonto(nombre, sumar) {
+      const input = document.getElementById(`mod-${nombre}`);
+      const valor = parseInt(input.value);
 
-      let totalGeneral = 0;
+      const tx = db.transaction("personas", "readwrite");
+      const store = tx.objectStore("personas");
+      const request = store.get(nombre);
 
-      personas.forEach((p, i) => {
-        totalGeneral += p.deudaActual;
-
-        const div = document.createElement('div');
-        div.className = 'persona';
-
-        div.innerHTML = `
-          <h3>${p.nombre}</h3>
-          <p>Deuda actual: $${p.deudaActual.toFixed(2)}</p>
-          <p>Deuda total histórica: $${p.deudaHistorial.toFixed(2)}</p>
-          <div class="acciones">
-            <input type="number" id="monto-${i}" placeholder="Monto">
-            <button onclick="actualizarDeuda(${i}, parseFloat(document.getElementById('monto-${i}').value) || 0)">Sumar</button>
-            <button onclick="actualizarDeuda(${i}, -1 * (parseFloat(document.getElementById('monto-${i}').value) || 0))">Restar</button>
-          <button onclick="eliminarPersona(${i})">Eliminar</button></div>
-        `;
-
-        lista.appendChild(div);
-      });
-
-      document.getElementById('totalGeneral').textContent = totalGeneral.toFixed(2);
-      document.getElementById('deudaHistoricaGeneral').textContent = deudaHistoricaGeneral.toFixed(2);
-
-      const filtroSelect = document.getElementById('filtroPersona');
-      filtroSelect.innerHTML = '<option value="">Todas las personas</option>';
-      personas.forEach(p => {
-        const opt = document.createElement('option');
-        opt.value = p.nombre;
-        opt.textContent = p.nombre;
-        filtroSelect.appendChild(opt);
-      });
-
-      renderHistorial();
+      request.onsuccess = () => {
+        const persona = request.result;
+        const cambio = sumar ? valor : -valor;
+        persona.monto += cambio;
+        persona.totalHistorico = (persona.totalHistorico || 0) + (sumar ? valor : 0);
+        persona.historial.push({ fecha: new Date().toISOString(), cambio, nombre });
+        store.put(persona);
+        tx.oncomplete = () => mostrarPersonas();
+      };
     }
 
-    function renderHistorial() {
-      const historialDiv = document.getElementById('historialMovimientos');
-      const filtro = document.getElementById('filtroPersona').value;
-      const filtrado = historialMovimientos.filter(m => !filtro || m.persona === filtro);
-      historialDiv.innerHTML = filtrado.slice(0, 20).map(m => `<div class="movimiento">${m.fecha}: ${m.accion} $${m.cantidad.toFixed(2)} a ${m.persona}</div>`).join('');
+    function exportarCompleta() {
+      const tx = db.transaction("personas", "readonly");
+      const store = tx.objectStore("personas");
+      const request = store.getAll();
+
+      request.onsuccess = () => {
+        const contenido = JSON.stringify(request.result, null, 2);
+        descargarTexto("lista_completa.txt", contenido);
+      };
     }
 
-    function exportarHistorial() {
-      const filtro = document.getElementById('filtroPersona').value;
-      const filtrado = historialMovimientos.filter(m => !filtro || m.persona === filtro);
-      const texto = filtrado.map(m => `${m.fecha}: ${m.accion} $${m.cantidad.toFixed(2)} a ${m.persona}`).join('\n');
-      const blob = new Blob([texto], { type: 'text/plain' });
+    function exportarSimple() {
+      const tx = db.transaction("personas", "readonly");
+      const store = tx.objectStore("personas");
+      const request = store.getAll();
+
+      request.onsuccess = () => {
+        const contenido = request.result.map(p => `${p.nombre}: ${p.monto.toLocaleString()}`).join("\n");
+        descargarTexto("lista_simple.txt", contenido);
+      };
+    }
+
+    function descargarTexto(nombre, contenido) {
+      const blob = new Blob([contenido], { type: "text/plain" });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
-      a.download = 'historial.txt';
+      a.download = nombre;
       a.click();
       URL.revokeObjectURL(url);
     }
 
-    
-    function eliminarPersona(index) {
-      if (!confirm('¿Eliminar esta persona?')) return;
-      const nombre = personas[index].nombre;
-      historialMovimientos = historialMovimientos.filter(m => m.persona !== nombre);
-      personas.splice(index, 1);
-      guardarDatos();
-      renderLista();
-    }
-
-    function borrarTodo() {
-      if (!confirm('¿Seguro que deseas borrar todos los datos?')) return;
-      personas = [];
-      historialMovimientos = [];
-      deudaHistoricaGeneral = 0;
-      guardarDatos();
-      renderLista();
-    }
-
-    function exportarDatos() {
-      let texto = '*** PERSONAS ***\n';
-      personas.forEach(p => {
-        texto += `Nombre: ${p.nombre}\nDeuda actual: $${p.deudaActual.toFixed(2)}\nDeuda histórica: $${p.deudaHistorial.toFixed(2)}\n---\n`;
-      });
-
-      texto += '\n*** HISTORIAL ***\n';
-      historialMovimientos.forEach(m => {
-        texto += `${m.fecha}: ${m.accion} $${m.cantidad.toFixed(2)} a ${m.persona}\n`;
-      });
-
-      const blob = new Blob([texto], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'datos_completos.txt';
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    function importarDatos(event) {
-      const file = event.target.files[0];
+    function importarLista() {
+      const input = document.getElementById("importFile");
+      const file = input.files[0];
       if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = function(e) {
-        const contenido = e.target.result;
-        const partes = contenido.split('*** HISTORIAL ***');
-        const personasTxt = partes[0].split('*** PERSONAS ***')[1].trim().split('---\n');
-        const historialTxt = partes[1].trim().split('\n');
-
-        personas = personasTxt.map(bloque => {
-          const lineas = bloque.trim().split('\n');
-          return {
-            nombre: lineas[0].split(': ')[1],
-            deudaActual: parseFloat(lineas[1].split('$')[1]),
-            deudaHistorial: parseFloat(lineas[2].split('$')[1])
-          };
-        });
-
-        historialMovimientos = historialTxt.map(linea => {
-          const [fechaAccion, resto] = linea.split(': ');
-          const [accionMonto, persona] = resto.split(' a ');
-          const [accion, montoStr] = accionMonto.split(' $');
-          return {
-            fecha: fechaAccion,
-            accion: accion,
-            cantidad: parseFloat(montoStr),
-            persona: persona
-          };
-        });
-
-        deudaHistoricaGeneral = personas.reduce((acc, p) => acc + p.deudaHistorial, 0);
-        guardarDatos();
-        renderLista();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+          const tx = db.transaction("personas", "readwrite");
+          const store = tx.objectStore("personas");
+          data.forEach(p => store.put(p));
+          tx.oncomplete = () => mostrarPersonas();
+        } catch (e) {
+          alert("Error al importar el archivo");
+        }
       };
       reader.readAsText(file);
     }
-
-
-    cargarDatos();
-    renderLista();
-    function exportarListaSimple() {
-  const texto = personas.map(p => `${p.nombre}:${p.deudaActual.toFixed(2)}`).join('\n');
-  const blob = new Blob([texto], { type: 'text/plain' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'lista_simple.txt';
-  a.click();
-  URL.revokeObjectURL(url);
-}
-    
   </script>
 </body>
 </html>
