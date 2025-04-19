@@ -1,16 +1,26 @@
-// Variables y estado principal
+
+// ===============================
+// VARIABLES Y ESTADO DE LA APP
+// ===============================
+
 let deudores = [];
 let historial = [];
 let penaltyActive = false;
 let db;
 
-// Inicializa IndexedDB
+// ===============================
+// INICIALIZACIÓN AL CARGAR LA PÁGINA
+// ===============================
 window.onload = () => {
   initDB();
   setInterval(verificarPenalizaciones, 86400000); // Verifica penalizaciones cada 24h
   document.getElementById("togglePenalty").onclick = togglePenalizacion;
+  document.getElementById("filtroHistorial").addEventListener("input", renderHistorial);
 };
 
+// ===============================
+// CONFIGURACIÓN Y MANEJO DE INDEXEDDB
+// ===============================
 function initDB() {
   const request = indexedDB.open("DeudaDB", 1);
   request.onerror = () => alert("Error al abrir la base de datos");
@@ -39,15 +49,19 @@ function cargarDeudores() {
   request.onsuccess = () => {
     deudores = request.result || [];
     renderizarDeudores();
+    renderHistorial();
   };
 }
 
+// ===============================
+// FUNCIONES PARA AGREGAR / SUMAR / RESTAR / ELIMINAR DEUDORES
+// ===============================
 function agregarDeudor() {
   const nombre = document.getElementById("nombre").value.trim();
   const monto = parseInt(document.getElementById("monto").value);
   if (!nombre || isNaN(monto)) return alert("Datos inválidos");
   if (deudores.find(d => d.nombre === nombre)) return alert("Ya existe");
-  
+
   const nuevo = {
     nombre,
     monto,
@@ -121,11 +135,17 @@ function eliminar(nombre) {
   renderHistorial();
 }
 
+// ===============================
+// ACTIVACIÓN / DESACTIVACIÓN DE PENALIZACIÓN
+// ===============================
 function togglePenalizacion() {
   penaltyActive = !penaltyActive;
   document.getElementById("penaltyStatus").textContent = penaltyActive ? "ON" : "OFF";
 }
 
+// ===============================
+// CÁLCULO DE PENALIZACIONES DIARIAS
+// ===============================
 function verificarPenalizaciones() {
   if (!penaltyActive) return;
   const diasGracia = parseInt(document.getElementById("diasGracia").value);
@@ -150,6 +170,9 @@ function verificarPenalizaciones() {
   renderHistorial();
 }
 
+// ===============================
+// CÁLCULO DE DÍAS HÁBILES (sin contar sábados ni domingos)
+// ===============================
 function contarDiasHabiles(desde, hasta) {
   let count = 0;
   for (let d = new Date(desde); d <= hasta; d.setDate(d.getDate() + 1)) {
@@ -159,6 +182,9 @@ function contarDiasHabiles(desde, hasta) {
   return count;
 }
 
+// ===============================
+// RENDERIZADO DEL HISTORIAL CON FILTRO
+// ===============================
 function renderHistorial() {
   const filtro = document.getElementById("filtroHistorial").value.toLowerCase();
   const ul = document.getElementById("listaHistorial");
@@ -170,6 +196,9 @@ function renderHistorial() {
   });
 }
 
+// ===============================
+// FUNCIONES DE EXPORTACIÓN E IMPORTACIÓN
+// ===============================
 function exportarCompleto() {
   const data = JSON.stringify({ deudores, historial }, null, 2);
   descargar("datos_completos.txt", data);
@@ -203,6 +232,9 @@ function importarDatos(event) {
   reader.readAsText(file);
 }
 
+// ===============================
+// FUNCIÓN UTILITARIA PARA DESCARGAR ARCHIVOS
+// ===============================
 function descargar(nombre, contenido) {
   const blob = new Blob([contenido], { type: "text/plain" });
   const a = document.createElement("a");
@@ -211,6 +243,25 @@ function descargar(nombre, contenido) {
   a.click();
 }
 
+// ===============================
+// FORMATEO DE NÚMEROS A FORMATO MONEDA SIN DECIMALES
+// ===============================
 function formatear(num) {
   return num.toLocaleString("es-ES", { maximumFractionDigits: 0 });
+}
+
+// ===============================
+// BORRAR TODOS LOS DATOS (base de datos completa)
+// ===============================
+function eliminarTodosLosDatos() {
+  if (!confirm("¿Estás seguro de que quieres eliminar todos los datos? Esta acción no se puede deshacer.")) return;
+  const request = indexedDB.deleteDatabase("DeudaDB");
+  request.onsuccess = function () {
+    alert("Todos los datos han sido eliminados.");
+    location.reload();
+  };
+  request.onerror = function (event) {
+    console.error("Error al eliminar la base de datos", event);
+    alert("Hubo un error al intentar eliminar los datos.");
+  };
 }
