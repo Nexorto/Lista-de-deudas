@@ -1,0 +1,104 @@
+/* Estilo moderno tipo OpenAI con modo oscuro */
+
+:root {
+    --bg-color: #121212;
+    --text-color: #f0f0f0;
+    --accent-color: #10a37f;
+    --card-color: #1e1e1e;
+    --danger-color: #e63946;
+    --border-color: #333;
+  }
+  
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+  }
+  
+  #app {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  input, button {
+    padding: 0.6rem;
+    margin: 0.2rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 1rem;
+    background-color: var(--card-color);
+    color: var(--text-color);
+  }
+  
+  button:hover {
+    background-color: var(--accent-color);
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  section {
+    background-color: var(--card-color);
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  }
+  
+  #listaDeudores {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .deudor-card {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    border-radius: 6px;
+    background-color: #2a2a2a;
+  }
+  
+  .deudor-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  .historial ul, .historial li {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .historial li {
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.5rem 0;
+  }
+  
+  .import-export button {
+    margin-top: 0.5rem;
+    display: block;
+  }
+  
+  @media (max-width: 600px) {
+    #app {
+      padding: 1rem;
+    }
+    input, button {
+      width: 100%;
+    }
+  }
+  

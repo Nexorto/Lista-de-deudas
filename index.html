@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Deudas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Encabezado principal -->
+    <header>
+      <h1>Gestión de Deudas</h1>
+      <button id="togglePenalty">Penalización: <span id="penaltyStatus">OFF</span></button>
+    </header>
+
+    <!-- Formulario para agregar deudores -->
+    <section class="deudor-form">
+      <input type="text" id="nombre" placeholder="Nombre">
+      <input type="number" id="monto" placeholder="Monto inicial">
+      <button onclick="agregarDeudor()">Agregar</button>
+    </section>
+
+    <!-- Lista de deudores -->
+    <section id="listaDeudores"></section>
+
+    <!-- Totales generales -->
+    <section class="totales">
+      <p>Total debido actual: <span id="totalDeuda">0</span></p>
+      <p>Total histórico: <span id="totalHistorico">0</span></p>
+    </section>
+
+    <!-- Días de gracia y penalización -->
+    <section class="gracia">
+      <label for="diasGracia">Días de gracia:</label>
+      <input type="number" id="diasGracia" value="5">
+      <label for="multaDiaria">Multa diaria:</label>
+      <input type="number" id="multaDiaria" value="10">
+    </section>
+
+    <!-- Historial de movimientos -->
+    <section class="historial">
+      <input type="text" id="filtroHistorial" placeholder="Filtrar por nombre" oninput="filtrarHistorial()">
+      <h2>Historial de Movimientos</h2>
+      <ul id="listaHistorial"></ul>
+    </section>
+
+    <!-- Exportar e importar -->
+    <section class="import-export">
+      <button onclick="exportarCompleto()">Exportar datos completos (.txt)</button>
+      <button onclick="exportarListaSimple()">Exportar lista simple (.txt)</button>
+      <input type="file" id="importFile" onchange="importarDatos(event)">
+    </section>
+  </div>
+
+  <!-- Archivo JavaScript con toda la lógica de la aplicación -->
+  <script src="script.js"></script>
+</body>
+</html>
